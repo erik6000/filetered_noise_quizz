@@ -25,7 +25,7 @@ function createFilteredWhiteNoise(lowFreq, highFreq, duration = 5, sampleRate = 
     const filter = audioContext.createBiquadFilter();
     filter.type = 'bandpass';
     filter.frequency.value = Math.sqrt(lowFreq * highFreq);
-    filter.Q.value = filter.frequency.value / (highFreq - lowFreq);
+    filter.Q.value = filter.frequency.value / (highFreq - lowFreq)*2;
 
     const source = audioContext.createBufferSource();
     source.buffer = whiteNoise;
