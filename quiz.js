@@ -77,23 +77,34 @@ document.getElementById('startQuiz').addEventListener('click', () => {
 			alert(`Quiz finished! You scored ${correctAnswers} out of ${totalQuestions}`);
 			return;
 		}
-		currentSource.start();
-		setTimeout(() => {
-			currentSource.stop();
-			const answer = prompt('Enter a frequency within the range (e.g., "23"):');
-			if (answer) {
-				const frequency = Number(answer);
-				const found = currentSource.band.low <= frequency && currentSource.band.high >= frequency;
 
-				if (found) {
-					flashFeedback('green', currentSource.band.center);
-					correctAnswers++;
-				} else {
-					flashFeedback('red', currentSource.band.center);
+		// User interaction is required to play audio on mobile devices.
+		const playAudio = () => {
+			currentSource.start();
+			setTimeout(() => {
+				currentSource.stop();
+				const answer = prompt('Enter a frequency within the range (e.g., "23"):');
+				if (answer) {
+					const frequency = Number(answer);
+					const found = currentSource.band.low <= frequency && currentSource.band.high >= frequency;
+
+					if (found) {
+						flashFeedback('green', currentSource.band.center);
+						correctAnswers++;
+					} else {
+						flashFeedback('red', currentSource.band.center);
+					}
 				}
-			}
-			currentSource = getNextFilteredNoise();
-		}, 5000);
+				currentSource = getNextFilteredNoise();
+			}, 5000);
+		};
+
+		// Check if the AudioContext is in the "suspended" state and resume it.
+		if (currentSource.context.state === 'suspended') {
+			currentSource.context.resume().then(playAudio);
+		} else {
+			playAudio();
+		}
 	}
     
 
